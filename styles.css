@@ -51,7 +51,7 @@ button:hover {
 }
 
 .translation-popup {
-  position: absolute !important;
+  position: fixed !important;
   background: white !important;
   padding: 10px !important;
   border-radius: 4px !important;
@@ -61,31 +61,21 @@ button:hover {
   font-family: Arial, sans-serif !important;
   font-size: 14px !important;
   line-height: 1.4 !important;
-  border: 1px solid #e0e0e0 !important;
-  margin-top: 5px !important;
+  border: 1px solid #ddd !important;
 }
 
 .translation-button {
-  position: absolute !important;
-  background: #1a73e8 !important;
+  position: fixed !important;
+  background: #4CAF50 !important;
   color: white !important;
-  padding: 4px 8px !important;
+  padding: 5px 10px !important;
   border: none !important;
-  border-radius: 3px !important;
+  border-radius: 4px !important;
   cursor: pointer !important;
   z-index: 2147483647 !important;
   font-family: Arial, sans-serif !important;
-  font-size: 12px !important;
-  min-width: 40px !important;
-  height: 24px !important;
+  font-size: 14px !important;
+  min-width: 60px !important;
   text-align: center !important;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-  transition: background-color 0.2s !important;
-  margin-left: 5px !important;
-  vertical-align: middle !important;
-  line-height: 1 !important;
-}
-
-.translation-button:hover {
-  background: #1557b0 !important;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2) !important;
 } 
