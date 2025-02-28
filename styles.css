@@ -69,23 +69,28 @@ button:hover {
   position: absolute !important;
   background: #1a73e8 !important;
   color: white !important;
-  padding: 4px 8px !important;
+  padding: 8px 16px !important;
   border: none !important;
-  border-radius: 3px !important;
+  border-radius: 6px !important;
   cursor: pointer !important;
   z-index: 2147483647 !important;
   font-family: Arial, sans-serif !important;
-  font-size: 12px !important;
-  min-width: 40px !important;
-  height: 24px !important;
+  font-size: 16px !important;
+  min-width: 64px !important;
+  min-height: 36px !important;
   text-align: center !important;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
-  transition: background-color 0.2s !important;
-  margin-left: 5px !important;
+  transition: all 0.2s !important;
+  margin-left: 8px !important;
   vertical-align: middle !important;
-  line-height: 1 !important;
+  line-height: 1.2 !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px !important;
+  white-space: nowrap !important;
 }
 
 .translation-button:hover {
   background: #1557b0 !important;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2) !important;
+  transform: translateY(-1px) !important;
 } 

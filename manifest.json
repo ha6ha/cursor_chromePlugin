@@ -10,7 +10,9 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://fanyi-api.baidu.com/*",
+    "https://libretranslate.de/*",
+    "https://api.mymemory.translated.net/*",
+    "https://translate.googleapis.com/*",
     "<all_urls>"
   ],
   "action": {
@@ -29,7 +31,8 @@
     }
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "icons": {
     "16": "images/icon16.png",
