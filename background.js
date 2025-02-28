@@ -1,16 +1,17 @@
-// 使用免费的谷歌翻译API
+// 使用 MyMemory 翻译 API
 async function translateText(text) {
   try {
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t&q=${encodeURIComponent(text)}`;
+    const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|zh`;
     
     const response = await fetch(url);
     const data = await response.json();
     
-    // 谷歌翻译返回的数据结构是一个嵌套数组，第一个元素包含翻译结果
-    if (data && data[0] && data[0][0] && data[0][0][0]) {
-      return data[0][0][0];
+    if (data && data.responseData && data.responseData.translatedText) {
+      return data.responseData.translatedText;
+    } else if (data.responseStatus === 429) {
+      throw new Error('超出API使用限制，请稍后再试');
     } else {
-      throw new Error('翻译结果格式错误');
+      throw new Error(data.responseDetails || '翻译失败');
     }
   } catch (error) {
     console.error('Translation API error:', error);
@@ -21,7 +22,6 @@ async function translateText(text) {
 // 监听来自content script的消息
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === 'translate') {
-    // 直接调用翻译函数，不需要API Key
     translateText(request.text)
       .then(translation => {
         sendResponse({ translation });
