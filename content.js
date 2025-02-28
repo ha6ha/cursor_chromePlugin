@@ -103,10 +103,11 @@ function showTranslationButton() {
     const pos = getSelectionPosition();
     if (!pos) return;
 
-    // 将按钮放在选中文本的右侧
-    button.style.left = `${pos.right + 5}px`;
-    button.style.top = `${pos.top}px`;
-    button.style.height = `${pos.height}px`;
+    // 将按钮放在选中文本的右侧，垂直居中
+    const buttonHeight = 24; // 按钮固定高度
+    const verticalOffset = (pos.height - buttonHeight) / 2;
+    button.style.left = `${pos.right + 6}px`;
+    button.style.top = `${pos.top + verticalOffset}px`;
   } catch (error) {
     console.error('Error showing translation button:', error);
   }
