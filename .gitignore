@@ -1,5 +1,6 @@
 # 环境变量（包含 DeepSeek API Key 等敏感信息）
 server/.env
+secret.txt
 
 # 依赖目录
 node_modules/
