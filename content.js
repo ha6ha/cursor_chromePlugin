@@ -1,0 +1,285 @@
+let translationButton = null;
+let aiTranslationButton = null;
+let translationPopup = null;
+let isTranslating = false;
+
+// 获取选中文本的位置信息
+function getSelectionPosition() {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return null;
+
+  const range = selection.getRangeAt(0);
+  const rect = range.getBoundingClientRect();
+  
+  return {
+    left: rect.left + window.pageXOffset,
+    top: rect.top + window.pageYOffset,
+    right: rect.right + window.pageXOffset,
+    bottom: rect.bottom + window.pageYOffset,
+    height: rect.height,
+    width: rect.width
+  };
+}
+
+// 安全地移除DOM元素
+function safeRemoveElement(element) {
+  try {
+    if (element && document.body.contains(element)) {
+      document.body.removeChild(element);
+    }
+  } catch (error) {
+    console.error('Error removing element:', error);
+  }
+}
+
+// 创建普通翻译按钮
+function createTranslationButton() {
+  try {
+    // 安全地移除已存在的按钮
+    if (translationButton) {
+      safeRemoveElement(translationButton);
+      translationButton = null;
+    }
+    
+    translationButton = document.createElement('button');
+    translationButton.className = 'translation-button';
+    translationButton.textContent = '翻译';
+    document.body.appendChild(translationButton);
+    
+    return translationButton;
+  } catch (error) {
+    console.error('Error creating translation button:', error);
+    return null;
+  }
+}
+
+// 创建 AI 翻译按钮
+function createAiTranslationButton() {
+  try {
+    if (aiTranslationButton) {
+      safeRemoveElement(aiTranslationButton);
+      aiTranslationButton = null;
+    }
+
+    aiTranslationButton = document.createElement('button');
+    aiTranslationButton.className = 'translation-button ai-translation-button';
+    aiTranslationButton.textContent = 'AI';
+    document.body.appendChild(aiTranslationButton);
+
+    return aiTranslationButton;
+  } catch (error) {
+    console.error('Error creating AI translation button:', error);
+    return null;
+  }
+}
+
+// 创建翻译结果弹窗
+function createTranslationPopup() {
+  try {
+    // 安全地移除已存在的弹窗
+    if (translationPopup) {
+      safeRemoveElement(translationPopup);
+      translationPopup = null;
+    }
+    
+    translationPopup = document.createElement('div');
+    translationPopup.className = 'translation-popup';
+    document.body.appendChild(translationPopup);
+    
+    return translationPopup;
+  } catch (error) {
+    console.error('Error creating translation popup:', error);
+    return null;
+  }
+}
+
+// 获取选中的文本
+function getSelectedText() {
+  try {
+    return window.getSelection().toString().trim();
+  } catch (error) {
+    console.error('Error getting selected text:', error);
+    return '';
+  }
+}
+
+// 清理所有翻译相关元素
+function cleanupTranslationElements() {
+  try {
+    safeRemoveElement(translationButton);
+    safeRemoveElement(aiTranslationButton);
+    safeRemoveElement(translationPopup);
+    translationButton = null;
+    aiTranslationButton = null;
+    translationPopup = null;
+  } catch (error) {
+    console.error('Error cleaning up elements:', error);
+  }
+}
+
+// 显示翻译按钮（普通 + AI）
+function showTranslationButton() {
+  try {
+    const button = createTranslationButton();
+    const aiButton = createAiTranslationButton();
+    if (!button || !aiButton) return;
+
+    const pos = getSelectionPosition();
+    if (!pos) return;
+
+    // 将按钮放在选中文本的右侧，垂直居中，两个按钮左右排布
+    const buttonHeight = 24; // 按钮固定高度
+    const verticalOffset = (pos.height - buttonHeight) / 2;
+    button.style.left = `${pos.right + 6}px`;
+    button.style.top = `${pos.top + verticalOffset}px`;
+
+    aiButton.style.left = `${pos.right + 6 + button.offsetWidth + 4}px`;
+    aiButton.style.top = `${pos.top + verticalOffset}px`;
+  } catch (error) {
+    console.error('Error showing translation button:', error);
+  }
+}
+
+// 显示翻译结果
+function showTranslationResult(text) {
+  try {
+    const popup = createTranslationPopup();
+    if (!popup) return;
+
+    popup.textContent = text;
+    
+    const pos = getSelectionPosition();
+    if (!pos) return;
+
+    // 将翻译结果放在选中文本的下方
+    popup.style.left = `${pos.left}px`;
+    popup.style.top = `${pos.bottom + 5}px`;
+  } catch (error) {
+    console.error('Error showing translation result:', error);
+  }
+}
+
+// 发送翻译请求
+async function translate(text) {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: 'translate',
+      text: text
+    });
+    return response.translation;
+  } catch (error) {
+    console.error('Translation error:', error);
+    return '翻译出错，请检查API设置';
+  }
+}
+
+// 发送 AI 翻译请求
+async function aiTranslate(text) {
+  try {
+    const response = await chrome.runtime.sendMessage({
+      action: 'aiTranslate',
+      text: text
+    });
+    return response.translation;
+  } catch (error) {
+    console.error('AI Translation error:', error);
+    return 'AI 翻译出错，请检查API设置';
+  }
+}
+
+// 防抖函数
+function debounce(func, wait) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+// 处理选中文本
+const handleTextSelection = debounce(async () => {
+  if (isTranslating) return;
+
+  try {
+    const selectedText = getSelectedText();
+    
+    if (selectedText && selectedText.length > 0) {
+      showTranslationButton();
+      
+      if (translationButton) {
+        translationButton.onclick = async (clickEvent) => {
+          try {
+            clickEvent.stopPropagation();
+            clickEvent.preventDefault();
+            
+            isTranslating = true;
+            const translation = await translate(selectedText);
+            showTranslationResult(translation);
+          } catch (error) {
+            console.error('Error in translation button click:', error);
+          } finally {
+            isTranslating = false;
+          }
+        };
+      }
+
+      if (aiTranslationButton) {
+        aiTranslationButton.onclick = async (clickEvent) => {
+          try {
+            clickEvent.stopPropagation();
+            clickEvent.preventDefault();
+
+            isTranslating = true;
+            const translation = await aiTranslate(selectedText);
+            showTranslationResult(translation);
+          } catch (error) {
+            console.error('Error in AI translation button click:', error);
+          } finally {
+            isTranslating = false;
+          }
+        };
+      }
+    } else {
+      cleanupTranslationElements();
+    }
+  } catch (error) {
+    console.error('Error in text selection handler:', error);
+    isTranslating = false;
+  }
+}, 200);
+
+// 监听选中文本事件
+document.addEventListener('mouseup', (e) => {
+  if (
+    e.target === translationButton ||
+    e.target === aiTranslationButton ||
+    e.target === translationPopup
+  ) {
+    return;
+  }
+  handleTextSelection(e);
+});
+
+// 点击页面其他地方时隐藏翻译按钮和弹窗
+document.addEventListener('click', (e) => {
+  if (
+    e.target !== translationButton &&
+    e.target !== aiTranslationButton &&
+    e.target !== translationPopup
+  ) {
+    cleanupTranslationElements();
+  }
+});
+
+// 页面滚动时更新翻译元素位置
+window.addEventListener('scroll', debounce(() => {
+  if (window.getSelection().toString().trim()) {
+    showTranslationButton();
+  } else {
+    cleanupTranslationElements();
+  }
+}, 200)); 

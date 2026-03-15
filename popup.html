@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Quick Translator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Quick Translator</h2>
+    <p>使用说明：</p>
+    <ol>
+      <li>选中需要翻译的英文文本</li>
+      <li>点击页面上出现的「翻译」按钮（使用普通翻译）</li>
+      <li>翻译结果会显示在文本附近</li>
+    </ol>
+
+    <hr />
+
+    <p>在弹窗中使用翻译：</p>
+    <textarea id="inputText" rows="4" placeholder="在这里输入要翻译的文本"></textarea>
+    <div style="margin-top: 8px;">
+      <button id="normalTranslate">普通翻译</button>
+      <button id="aiTranslate">AI 翻译 Beta（DeepSeek）</button>
+    </div>
+    <div id="result" style="margin-top: 8px;"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
