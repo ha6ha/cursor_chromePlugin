@@ -10,11 +10,11 @@
     "tabs"
   ],
   "host_permissions": [
-  "https://libretranslate.de/*",
-  "https://api.mymemory.translated.net/*",
-  "https://translate.googleapis.com/*",
-  "https://api.deepseek.com/*",
-  "<all_urls>"
+    "https://libretranslate.de/*",
+    "https://api.mymemory.translated.net/*",
+    "https://translate.googleapis.com/*",
+    "http://localhost:3000/*",
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",

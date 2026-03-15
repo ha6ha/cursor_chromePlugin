@@ -38,33 +38,16 @@ async function translateText(text) {
   }
 }
 
-// 使用 DeepSeek 进行 AI 增强翻译
-// 注意：实际项目中请不要把 API Key 写死在前端，可考虑通过后端代理
-const DEEPSEEK_API_KEY = 'sk-43fe9591e35e4a05be3ab59a7b0135cc';
-
 async function aiTranslateWithDeepSeek(text) {
   try {
-    const url = 'https://api.deepseek.com/chat/completions';
+    // 通过后端代理调用 DeepSeek，后端负责保存和注入 API Key
+    const url = 'http://localhost:3000/deepseek';
 
-    const body = {
-      model: 'deepseek-chat',
-      messages: [
-        {
-          role: 'system',
-          content:
-            '你是一个专业的中英文翻译助手，只返回翻译后的文本本身，不要解释，不要添加前后缀。',
-        },
-        {
-          role: 'user',
-          content: text,
-        },
-      ],
-    };
+    const body = { text };
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${DEEPSEEK_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
@@ -75,7 +58,7 @@ async function aiTranslateWithDeepSeek(text) {
     }
 
     const data = await response.json();
-    const result = data?.choices?.[0]?.message?.content?.trim();
+    const result = data?.translation?.trim();
 
     if (!result) {
       throw new Error('DeepSeek 返回结果为空');
